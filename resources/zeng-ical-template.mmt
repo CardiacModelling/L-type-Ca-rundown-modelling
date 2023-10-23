@@ -1,0 +1,164 @@
+[[model]]
+author: Aditi Agrawal
+name: zeng_1995
+# Initial values
+L_type_Ca_current.d = 0
+L_type_Ca_current.f = 1
+calcium_dynamics.Ca0 = 0
+calcium_dynamics.B0 = 0
+calcium_dynamics.CaB0 = 0
+
+[L_type_Ca_current]
+
+use calcium_dynamics.Ca0 as Cai
+
+# constants
+Cao = 2.15 in [mM]
+Ki = 110 in [mM]
+Ko = 3.5 in [mM]
+Nai = 9.1 in [mM]
+Nao = 78.75 in [mM]
+Cli = 15 in [mM]
+Clo = 89.05 in [mM]
+Fi = 100 in [mM]
+Fo = 0 in [mM]
+Mgi = 0 in [mM]
+Mgo = 1 in [mM]
+Csi = 0 in [mM]
+Cso = 0.5 in [mM]
+Io = 0.5* (4 * Cao + Ko + Nao + Clo + Fo + 4 * Mgo + Cso) * 0.001[1/mM] in [1]
+Ii = 0.5* (4 * Cai + Ki + Nai + Cli + Fi + 4 * Mgi + Csi) * 0.001[1/mM] in [1]
+A = 1.82e6 * (74[1/K]* membrane.T)^(-1.5) in [1]
+
+# activity coefficients
+di_i = 10^(-4*A*((Ii^0.5/(1 + Ii^0.5)) - 0.3 * Ii)) in [1]
+mono_i = 10^(-1*A*((Ii^0.5/(1 + Ii^0.5)) - 0.3 * Ii)) in [1]
+di_o = 10^(-4*A*((Io^0.5/(1 + Io^0.5)) - 0.3 * Io)) in [1]
+mono_o = 10^(-1*A*((Io^0.5/(1 + Io^0.5)) - 0.3 * Io)) in [1]
+
+P_Ca = 0.04 [nL/s]
+    in [nL/s]
+alpha_K = 5e-4 [1]
+    in [1]
+alpha_Na = 2.78e-5 [1]
+    in [1]
+driving_term_ghk = (driving_term_ghk_Ca + alpha_K * driving_term_ghk_K + alpha_Na * driving_term_ghk_Na)
+    in [s*A/m^3]
+    oxmeta: membrane_L_type_calcium_current_GHK_driving_term
+driving_term_ghk_Ca = 2 ^ 2 * membrane.V * membrane.F ^ 2 / (membrane.R * membrane.T) * (di_i * Cai * exp(2 * membrane.V * membrane.F / (membrane.R * membrane.T)) - di_o * Cao) / (exp(2 * membrane.V * membrane.F / (membrane.R * membrane.T)) - 1)
+    in [s*A/m^3]
+driving_term_ghk_K = 1 ^ 2 * membrane.V * membrane.F ^ 2 / (membrane.R * membrane.T) * (mono_i * Ki * exp(1 * membrane.V * membrane.F / (membrane.R * membrane.T)) - mono_o * Ko) / (exp(1 * membrane.V * membrane.F / (membrane.R * membrane.T)) - 1)
+    in [s*A/m^3]
+driving_term_ghk_Na = 1 ^ 2 * membrane.V * membrane.F ^ 2 / (membrane.R * membrane.T) * (mono_i * Nai * exp(1 * membrane.V * membrane.F / (membrane.R * membrane.T)) - mono_o * Nao) / (exp(1 * membrane.V * membrane.F / (membrane.R * membrane.T)) - 1)
+    in [s*A/m^3]
+
+i_CaLCa = P_Ca * driving_term_ghk_Ca * open_prob
+    in [pA]
+i_CaL = P_Ca * driving_term_ghk * open_prob
+    in [pA]
+    oxmeta: membrane_L_type_calcium_current
+open_prob = d * f * f_Ca
+    in [1]
+    oxmeta: membrane_L_type_calcium_current_open_probability
+    
+Km_Ca = 0.09e-5 [mM]
+    in [mM]
+f_Ca = 1 / (1 + Cai / Km_Ca)
+    in [1]
+
+alpha_d = d_infinity / tau_d
+    in [mS/uF]
+beta_d = (1 - d_infinity) / tau_d
+    in [mS/uF]
+dot(d) = alpha_d * (1 - d) - beta_d * d
+    in [1]
+d_infinity = 1 / (1 + exp(-(membrane.V + 10 [mV]) / 6.24 [mV]))
+    in [1]
+tau_d = d_infinity * (1 - exp(-(membrane.V + 10 [mV]) / 6.24 [mV])) / (0.035 [1/mV/ms] * (membrane.V + 10 [mV]))
+    in [ms]
+
+alpha_f = f_infinity / tau_f
+    in [mS/uF]
+beta_f = (1 - f_infinity) / tau_f
+    in [mS/uF]
+dot(f) = alpha_f * (1 - f) - beta_f * f
+    in [1]
+f_infinity = 1 / (1 + exp((membrane.V + 35.06 [mV]) / 8.6 [mV])) + 0.6 / (1 + exp((50 [mV] - membrane.V) / 20 [mV]))
+    in [1]
+tau_f = 1 [ms] / (0.0197 * exp(-(0.0337 [1/mV] * (membrane.V + 10 [mV])) ^ 2) + 0.02)
+    in [ms]
+
+[calcium_dynamics]
+buffering = 1 in [1]
+current = 1 in [1]
+diffusion = 1 in [1]
+
+N = 50 in [1]
+R = 6e-4 in [cm]
+r0 = 1e-4/1.4142 in [cm]
+L = (R-r0)/N in [cm]
+B_max = 10 in [mM]
+k_on = 1700 in [1/mM/ms] 
+k_off = 0.298 in [1/ms]
+D_Ca = 4 * 1e-9 in [cm^2/ms]
+D_B = 2 * 1e-9 in [cm^2/ms]
+
+# Zero (0) is the outermost shell
+
+V0 = 2 * 3.14 * ((R - 0*L)^3 - (R - 1*L)^3)/3
+    in [cm^3]
+A0 = 2 * 3.14 * (R - (0*L + L/2))^2 # this is wrong definition but will be corected in file
+    in [cm^2]
+A1 = 2 * 3.14 * (R - (0*L + L/2))^2 # this is wrong definition but will be corected in file
+    in [cm^2]
+
+dot(Ca0) = - current*(L_type_Ca_current.i_CaLCa) /(2* membrane.F * V0 * 1e12 [pL/L] * 1e-3[L/cm^3])\
+         + buffering * (-k_on * Ca0 * B0 + k_off * (CaB0)) - diffusion*D_Ca *(Ca0 - Ca1) * A1/(L*V0) 
+    in [mM]
+Ca1 = 0 in [mM] #placeholder here, fleshed out in the file
+dot(B0) = buffering * (-k_on * Ca0 * B0 + k_off * (CaB0)) + D_B *(B1 - B0)* A1/(L*V0)
+    in [mM]
+B1 = 0 in [mM] # placeholder here, fleshed out in the file
+dot(CaB0) = -buffering*(-k_on * Ca0 * B0 + k_off * (CaB0)) + D_B *(CaB1 - CaB0)* A1/(L*V0)
+    in [mM]
+CaB1 = 0 in [mM]
+
+[environment]
+time = 0 [ms] bind time
+    in [ms]
+    oxmeta: time
+
+[membrane]
+F = 96500 [C/mol]
+    in [C/mol]
+R = 8314 [mJ/mol/K]
+    in [mJ/mol/K]
+T = 310 [K]
+    in [K]
+V = -90 bind pace
+    in [mV]
+    oxmeta: membrane_voltage
+
+[[protocol]]
+# Level  Start    Length   Period   Multiplier
+1.0      100.0    0.5      1000.0   0
+
+[[script]]
+import matplotlib.pyplot as plt
+import myokit
+
+# Get model and protocol, create simulation
+m = get_model()
+p = get_protocol()
+s = myokit.Simulation(m, p)
+
+# Run simulation
+d = s.run(1000)
+
+# Display the results
+var = 'membrane.V'
+plt.figure()
+plt.plot(d.time(), d[var])
+plt.title(var)
+plt.show()
+
