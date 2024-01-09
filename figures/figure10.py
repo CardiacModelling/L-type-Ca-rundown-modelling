@@ -18,7 +18,7 @@ ax1 = fig.add_subplot(131)
 ax2 = fig.add_subplot(132)
 ax3 = fig.add_subplot(133)
 
-ax1.set_ylabel('Peak-[$\mathrm{Ca}^{2+}$] (normalised)')
+ax1.set_ylabel('Peak-[$Ca^{2+}]_s$ (normalised)')
 ax1.set_xlabel('Time (s)')
 ax2.set_xlabel('Time (s)')
 ax3.set_xlabel('Time (s)')
@@ -111,6 +111,8 @@ while count_t < n_draw_ax2:
 
 ax3.legend(bbox_to_anchor = (0.2, 1, 0.6, 0.15), loc = 'center', ncol =2,\
     prop={'size': 8})
+
+ax1.text(0.05, 0.95, f"N = {n_draw_ax1}", transform=ax1.transAxes, verticalalignment='top', horizontalalignment='left')
 
 ax1.set_xticks([0, 50, 100, 150], [0, 50, 100, 150])
 ax2.set_xticks([0, 50, 100, 150], [0, 50, 100, 150])

@@ -21,7 +21,7 @@ fig = plt.figure(figsize=(6.6, 3))
 fig_cont = []
 for i in range(2):
     fig_cont.append(fig.add_subplot(int(f'12{i+1}')))
-fig_cont[0].set_ylabel('[$\mathrm{Ca}^{2+}$] (mM)')
+fig_cont[0].set_ylabel('[[$Ca^{2+}]_s$ (mM)')
 fig_cont[1].set_ylabel('[B] (mM)')
 fig_cont[1].set_xlabel('Time (s)')
 fig_cont[0].set_xlabel('Time (s)')
@@ -45,6 +45,16 @@ for i in range(n_sweep):
     fig_cont[1].axvspan(i*mult, (i+1)*mult, color = 'grey', \
     alpha = (i%2) * 0.3 + 0.1, transform=fig_cont[1].get_xaxis_transform())
 
-plt.tight_layout()
+# Add colorbar between the subplots on the top
+cax = fig.add_axes([0.15, 0.92, 0.7, 0.02])  # Adjust position and size as needed
+norm = matplotlib.colors.Normalize(vmin=np.min(pca_range), vmax=np.max(pca_range))
+sm = plt.cm.ScalarMappable(cmap=matplotlib.cm.viridis, norm=norm)
+sm.set_array([])  # You need to set an empty array to the ScalarMappable
+
+# Create colorbar
+cbar = plt.colorbar(sm, cax=cax, orientation='horizontal')
+cbar.set_label('$\overline{P}_{Ca}$ (nL/s)', labelpad = -30)
+
+plt.subplots_adjust(top=0.82, right=0.88)
 plt.savefig('supporting/figure8_fca.png')
 plt.close()

@@ -42,7 +42,7 @@ alpha_K = 5e-4 [1]
     in [1]
 alpha_Na = 2.78e-5 [1]
     in [1]
-driving_term_ghk = (driving_term_ghk_Ca + alpha_K * driving_term_ghk_K + alpha_Na * driving_term_ghk_Na)
+driving_term_ghk = (driving_term_ghk_Ca) # + alpha_K * driving_term_ghk_K + alpha_Na * driving_term_ghk_Na)
     in [s*A/m^3]
     oxmeta: membrane_L_type_calcium_current_GHK_driving_term
 driving_term_ghk_Ca = 2 ^ 2 * membrane.V * membrane.F ^ 2 / (membrane.R * membrane.T) * (di_i * Cai * exp(2 * membrane.V * membrane.F / (membrane.R * membrane.T)) - di_o * Cao) / (exp(2 * membrane.V * membrane.F / (membrane.R * membrane.T)) - 1)

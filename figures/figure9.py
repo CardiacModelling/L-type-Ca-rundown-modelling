@@ -22,7 +22,7 @@ ax2 = fig.add_subplot(132)
 ax3 = fig.add_subplot(133)
 
 
-ax1.set_ylabel('Peak-[$\mathrm{Ca}^{2+}$] (normalised)')
+ax1.set_ylabel('Peak-[$Ca^{2+}]_s$ (normalised)')
 ax1.set_xlabel('Time (s)')
 ax2.set_xlabel('Time (s)')
 ax3.set_xlabel('Time (s)')
@@ -71,6 +71,13 @@ ax3.set_xticks([0, 50, 100, 150], [0, 50, 100, 150])
 
 ax2.legend(bbox_to_anchor = (1.6, 0.95, 0.8, 0.2) , ncol = 10, \
     prop={'size': 6}, bbox_transform = ax2.transAxes)
+
+ax1.text(0.05, 0.97, '$t_{hold} = 10s$', transform=ax1.transAxes,
+                 verticalalignment='top', horizontalalignment='left', fontsize=8)
+ax2.text(0.05, 0.97, '$t_{hold} = 20s$', transform=ax2.transAxes,
+                 verticalalignment='top', horizontalalignment='left', fontsize=8)
+ax3.text(0.05, 0.97, '$t_{hold} = 40s$', transform=ax3.transAxes,
+                 verticalalignment='top', horizontalalignment='left', fontsize=8)
 
 plt.subplots_adjust(bottom=0.17, wspace = 0.35)
 plt.savefig('figures/figure9.pdf')

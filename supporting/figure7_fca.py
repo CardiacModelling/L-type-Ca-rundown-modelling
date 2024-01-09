@@ -24,10 +24,15 @@ for i in range(16):
     fig_cont.append(fig.add_subplot(gs[i]))
     if i % 2 == 0:
         pass
+    else:
+        if i == 9 or i ==11:
+            fig_cont[i].set_ylim(0, 10)
+        else:
+            fig_cont[i].set_ylim(6, 10)
 
-fig_cont[0].set_title('$\overline{P}_{Ca}$ Min\n[$\mathrm{Ca}^{2+}$] (mM)')
+fig_cont[0].set_title('$\overline{P}_{Ca}$ Min\n[$Ca^{2\!+}]_s$ (mM)')
 fig_cont[1].set_title('$\overline{P}_{Ca}$ Min\n[B] (mM)')
-fig_cont[2].set_title('$\overline{P}_{Ca}$ Max\n[$\mathrm{Ca}^{2+}$] (mM)')
+fig_cont[2].set_title('$\overline{P}_{Ca}$ Max\n[$Ca^{2\!+}]_s$ (mM)')
 fig_cont[3].set_title('$\overline{P}_{Ca}$ Max\n[B] (mM)')
 fig_cont[0].set_ylabel('Min $R_0$, Min $t_0$')
 fig_cont[4].set_ylabel('Min $R_0$, Max $t_0$')

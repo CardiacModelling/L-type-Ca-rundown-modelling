@@ -18,7 +18,7 @@ ax1 = fig.add_subplot(131)
 ax2 = fig.add_subplot(132)
 ax3 = fig.add_subplot(133)
 
-ax1.set_ylabel('Peak-[$\mathrm{Ca}^{2+}$] (normalised)')
+ax1.set_ylabel('Peak-[$Ca^{2+}]_s$ (normalised)')
 ax1.set_xlabel('Time (s)')
 ax2.set_xlabel('Time (s)')
 ax3.set_xlabel('Time (s)')

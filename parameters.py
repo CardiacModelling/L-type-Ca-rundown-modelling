@@ -16,7 +16,7 @@ thold_default = 10000 # milli second
 
 # PCa
 pca_min = 0.005 # nL/s
-pca_max = 0.0457 # nL/s
+pca_max = 0.0444 # 0.0457 # nL/s
 pca_default = 0.04 # nL/s
 
 # shell width

@@ -17,18 +17,56 @@ Rh = parameters.Rh
 # Set font
 matplotlib.rc('font', family='arial', size = 8)
 
-fig = plt.figure(figsize=(6.6, 8))
-gs = matplotlib.gridspec.GridSpec(4, 4, figure = fig)
+fig, axs = plt.subplots(
+    nrows=7, # add 3 new rows
+    ncols=5,  # add 1 new column ...
+    figsize=(6.6, 8),                      
+    gridspec_kw={'width_ratios': [1, 1, 0.01, 1, 1], 
+                 'height_ratios': [1, 0.01, 1, 0.01, 1, 0.01, 1]}
+)
+
+for ax in axs[:, 2]: 
+    ax.axis("off")  # Turn off axis lines and labels for this column
+
+for ax in axs[1, :]:
+    ax.axis("off")
+
+for ax in axs[3, :]:
+    ax.axis("off")
+
+for ax in axs[5, :]:
+    ax.axis("off")
+
 fig_cont = []
+
+for i in range(7):
+    if i == 1 or i ==3 or i==5:
+        continue
+
+    for j in range(5):
+        if j == 2:
+            continue
+        fig_cont.append(fig.add_subplot(axs[i, j]))
+
 for i in range(16):
-    fig_cont.append(fig.add_subplot(gs[i]))
     if i % 2 == 0:
         pass
+    else:
+        if i == 1 or i ==3 or i == 5 or i == 7:
+            fig_cont[i].set_ylim(6, 10)
+        else:
+            fig_cont[i].set_ylim(0, 10)
 
-fig_cont[0].set_title('$\overline{P}_{Ca}$ Min\n[$\mathrm{Ca}^{2+}$] (mM)')
-fig_cont[1].set_title('$\overline{P}_{Ca}$ Min\n[B] (mM)')
-fig_cont[2].set_title('$\overline{P}_{Ca}$ Max\n[$\mathrm{Ca}^{2+}$] (mM)')
-fig_cont[3].set_title('$\overline{P}_{Ca}$ Max\n[B] (mM)')
+fig.text(0.17, 0.97, 'Minimum permeability ($\overline{P}_{Ca}$)', \
+         fontsize = 9, family = 'arial')
+fig.text(0.68, 0.97, 'Maximum permeability ($\overline{P}_{Ca}$)', \
+         fontsize = 9, family = 'arial')
+
+
+fig_cont[0].set_title('[$Ca^{2+}]_s$ (mM)')
+fig_cont[1].set_title('[B] (mM)')
+fig_cont[2].set_title('[$Ca^{2+}]_s$ (mM)')
+fig_cont[3].set_title('[B] (mM)')
 fig_cont[0].set_ylabel('Min $R_0$, Min $t_0$')
 fig_cont[4].set_ylabel('Min $R_0$, Max $t_0$')
 fig_cont[8].set_ylabel('Max $R_0$, Min $t_0$')
@@ -69,8 +107,9 @@ for r in r_range:
 for i in range(n_sweep):
     for j in range(16):
         fig_cont[j].axvspan(i*mult, (i+1)*mult, color = 'grey', \
-            alpha = (i%2) * 0.3 + 0.1, transform=fig_cont[j].get_xaxis_transform())
+            alpha = (i%2) * 0.3 + 0.1, transform=fig_cont[j].get_xaxis_transform())      
+
 plt.tight_layout()
-plt.subplots_adjust(left = 0.08, bottom = 0.05, right = 0.98)
+plt.subplots_adjust(left = 0.08, bottom = 0.05, right = 0.98, top= 0.925)
 plt.savefig('figures/figure7.pdf')
 plt.close()
