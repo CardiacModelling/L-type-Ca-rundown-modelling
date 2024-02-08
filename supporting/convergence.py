@@ -28,7 +28,7 @@ fig = plt.figure(figsize=(6.6, 3))
 ax = fig.add_subplot(121) 
 ax2 = fig.add_subplot(122) 
 
-ax.set_ylim(0, B_max)
+ax.set_ylim(9, B_max)
 ax.set_xlim(0, R*10000)
 ax.set_ylabel('Free buffer (mM)')
 ax.set_xlabel('Distance from the centre ($\mu$m)')

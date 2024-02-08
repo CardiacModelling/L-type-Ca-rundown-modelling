@@ -118,7 +118,7 @@ def cal_tdiff(r):
         # only need solution at the boundar, which is x = 0
         answer = convergence(0, tau, roots, h) 
         # check that term2 is much smaller than term1, i.e, less than 1%
-        if abs(answer) < 0.01 * abs(1/(1 - h)):
+        if abs(answer) < 0.001 * abs(1/(1 - h)):
             tdiff = (tau * (r - r_h)**2)/DB
             return tdiff
         elif tau == tau_range[-1]:
@@ -223,7 +223,7 @@ def plot_largest_r():
 
         
         ax.plot(rad, arr, color = colors[i])
-        ax.text(30, arr[0] + 0.1, f't = {round(t_range[i]/1000)}s', fontsize = 6)
+        ax.text(31, arr[0] + 0.1, f't = {round(t_range[i]/1000)}s', fontsize = 6)
 
     plt.tight_layout()
     plt.show()

@@ -82,7 +82,7 @@ def multi_compartment_model(m, no_of_div, B_arr):
     return model
 
 
-def simulate_ical(n_sweep, N_div, R, t0, PCa, thold = 10000, block_fca = True, peak = False):
+def simulate_ical(n_sweep, N_div, R, t0, PCa, thold = 10000, peak = False):
     """
     Everything in the "hollow" hemispherical model
     """
@@ -129,8 +129,8 @@ def simulate_ical(n_sweep, N_div, R, t0, PCa, thold = 10000, block_fca = True, p
     m.get('L_type_Ca_current.d').set_state_value(d_inf)
     f_inf = m.get('L_type_Ca_current.f_infinity').pyfunc()(-90)
     m.get('L_type_Ca_current.f').set_state_value(f_inf)
-    if block_fca == True:
-        m.get('L_type_Ca_current.open_prob').set_rhs('d*f')
+    # if block_fca == True:
+    #     m.get('L_type_Ca_current.open_prob').set_rhs('d*f')
     m.get('membrane.V').set_binding(None)
 
     sim = myokit.Simulation(m)
@@ -164,28 +164,115 @@ def simulate_ical(n_sweep, N_div, R, t0, PCa, thold = 10000, block_fca = True, p
     else:
         return d
     
+def simulate_ical_curr(n_sweep, N_div, R, t0, PCa, thold = 10000):
+    """
+    Everything in the "hollow" hemispherical model
+    """
+
+    # array for store
+    log_b = [f'calcium_dynamics.B{i}' for i in range(N_div)]
+
+    mod = myokit.load_model('resources/zeng-ical-template.mmt')
+    mod.get('calcium_dynamics.R').set_rhs(R) # cm
+    mod.get('L_type_Ca_current.P_Ca').set_rhs(PCa)
+    m = multi_compartment_model(mod, N_div, [0 for _ in range(N_div)])
+    
+    # define B initial
+    m1 = copy.deepcopy(m)
+    m1.get('calcium_dynamics.buffering').set_rhs(0)
+    m1.get('calcium_dynamics.current').set_rhs(0)
+
+    # strip ion-channel model
+    m1.get('L_type_Ca_current.d').demote
+    m1.get('L_type_Ca_current.d').set_rhs(0)
+    m1.get('L_type_Ca_current.f').demote
+    m1.get('L_type_Ca_current.f').set_rhs(1)
+
+    for i in range(N_div):
+        m1.get(f'calcium_dynamics.Ca{i}').demote
+        m1.get(f'calcium_dynamics.Ca{i}').set_rhs(0)
+        m1.get(f'calcium_dynamics.CaB{i}').demote
+        m1.get(f'calcium_dynamics.CaB{i}').set_rhs(0)
+
+    for i in range(N_div):
+        m1.get(f'calcium_dynamics.B{i}').set_state_value(0)
+
+    s = myokit.Simulation(m1)
+    s.set_tolerance(abs_tol=1e-9, rel_tol=1e-09)
+    
+    d = s.run(t0 + 1, log = log_b, log_times = np.array([t0]))
+
+    for b in log_b:
+        m.get(b).set_state_value(d[b][0])
+
+
+    # ion-channel model ss
+    d_inf = m.get('L_type_Ca_current.d_infinity').pyfunc()(-90)
+    m.get('L_type_Ca_current.d').set_state_value(d_inf)
+    f_inf = m.get('L_type_Ca_current.f_infinity').pyfunc()(-90)
+    m.get('L_type_Ca_current.f').set_state_value(f_inf)
+    # if block_fca == True:
+    #     m.get('L_type_Ca_current.open_prob').set_rhs('d*f')
+    m.get('membrane.V').set_binding(None)
+
+    sim = myokit.Simulation(m)
+    sim.set_tolerance(abs_tol=1e-9, rel_tol=1e-09)
+
+    sim.set_constant('membrane.V', -90)
+    sim.run(thold, log=[]) 
+    sim.set_constant('membrane.V', -0.001)
+    t = sim.time()
+    d = sim.run(120, log = ['L_type_Ca_current.i_CaL'],\
+         log_times = np.arange(t, t+120, 1))
+    
+    peak_ical = [min(d['L_type_Ca_current.i_CaL'])]
+
+    for i in range(n_sweep -1):
+        sim.set_constant('membrane.V', -90)
+        sim.run(thold, log = [])
+        sim.set_constant('membrane.V', -0.001)
+        t = sim.time()
+        b = sim.run(120, log = d, log_times = np.arange(t, t+120, 1))
+
+        peak_ical.append(min(b['L_type_Ca_current.i_CaL'][-120:]))
+    
+    return [1 - x/peak_ical[0] for x in peak_ical], 0
+
 
 def draw_t():
     # draw all three time variables
     thold_range = [10000, 20000, 40000] # milli seconds
     thold = np.random.choice(thold_range)
     t0 = int(np.random.uniform(5000, 300000, size = 1)[0])
-    tdiff = int(np.random.uniform(41, 708181, size = 1)[0])
+    tdiff = int(np.random.uniform(144, 422601, size = 1)[0])
     
     return thold, t0, tdiff
 
 def peak_ca(thold, t0, tdiff, n_sweep, pca, dR, block_fca = True):
 
     # compute r from t_diff
-    f = lambda x: 0.011 * x ** 3 - 0.02 * x ** 2 + 0.117 * x - 0.402 - tdiff/1000
+    f = lambda x: 0.0163 * x ** 3 - 0.019 * x ** 2 + 0.008 * x - 0.016 - tdiff/1000
     r = fsolve(f, [30])[0] * 1e-4 # convert to cm
 
     N_div = int((r-parameters.Rh)/dR)
     print('radius (um)', r*1e4, 'Ndiv', N_div)
 
-    peak_ca, _ = simulate_ical(n_sweep, N_div, r, t0, pca, thold = thold, peak = True, block_fca=block_fca)
+    peak_ca, _ = simulate_ical(n_sweep, N_div, r, t0, pca, thold = thold, peak = True)
 
     return peak_ca
+
+def peak_ical(thold, t0, tdiff, n_sweep, pca, dR):
+
+    # compute r from t_diff
+    f = lambda x: 0.0163 * x ** 3 - 0.019 * x ** 2 + 0.008 * x - 0.016 - tdiff/1000
+    r = fsolve(f, [30])[0] * 1e-4 # convert to cm
+
+    N_div = int((r-parameters.Rh)/dR)
+    print('radius (um)', r*1e4, 'Ndiv', N_div)
+
+    peak_ical, _ = simulate_ical_curr(n_sweep, N_div, r, t0, pca, thold = thold)
+
+    return peak_ical
 
 def simple_beeswarm(y, nbins=None):
     """

@@ -25,28 +25,16 @@ print("Figure 9 generated")
 import figure10
 print("Figure 10 generated")
 
+import figure11
+print("Figure 11 generated")
+
+import figure12
+print("Figure 12 generated")
+
 sys.path.append("supporting")
 
 import convergence
 print('Convergence plot generated')
-
-import figure6_no_fca
-print('Supplementary Figure 6 generated')
-
-# import optimise_KIC50
-# print("KIC50 optimisation done")
-
-import figure7_fca
-print("Supplementary Figure 7 generated")
-
-import figure8_fca
-print("Supplementary Figure 8 generated")
-
-import figure9_fca
-print("Supplementary Figure 9 generated")
-
-import figure10_fca
-print("Supplementary Figure 10 generated")
 
 import zeta_accuracy
 print("Zeta accuracy done")

@@ -1,7 +1,7 @@
 
 # Radius
-R_min = 2e-4 #cm
-R_max = 40.6e-4 #cm
+R_min = 2.5e-4 #2e-4 #cm
+R_max = 30e-4 #cm
 R_default = 30e-4 # cm
 
 # time before experiment

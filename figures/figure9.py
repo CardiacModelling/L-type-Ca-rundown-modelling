@@ -22,7 +22,7 @@ ax2 = fig.add_subplot(132)
 ax3 = fig.add_subplot(133)
 
 
-ax1.set_ylabel('Peak-[$Ca^{2+}]_s$ (normalised)')
+ax1.set_ylabel('Rundown')
 ax1.set_xlabel('Time (s)')
 ax2.set_xlabel('Time (s)')
 ax3.set_xlabel('Time (s)')
@@ -36,21 +36,21 @@ for i in range(len(t0_range)):
     print('t1')
     thold = 10000
     n_sweep, mult = parameters.cal_n_sweep(thold)
-    d1, _ = helpers.simulate_ical(n_sweep, N_div, R, t0_range[i], pca, thold = thold, peak = True)
+    d1, _ = helpers.simulate_ical_curr(n_sweep, N_div, R, t0_range[i], pca, thold = thold)
     x_range = np.linspace(0, n_sweep -1, n_sweep)
     ax1.plot(x_range*mult, d1, color = colors[i], label = f'{int(t0_range[i]/1000)}s')
 
     print('t2')
     thold = 20000
     n_sweep, mult = parameters.cal_n_sweep(thold)
-    d2, _ = helpers.simulate_ical(n_sweep, N_div, R, t0_range[i], pca, thold = thold, peak = True)
+    d2, _ = helpers.simulate_ical_curr(n_sweep, N_div, R, t0_range[i], pca, thold = thold)
     x_range = np.linspace(0, n_sweep -1, n_sweep)
     ax2.plot(x_range*mult, d2, color = colors[i], label = f'{int(t0_range[i]/1000)}s')
 
     print('t3')
     thold = 40000
     n_sweep, mult = parameters.cal_n_sweep(thold)
-    d3, _ = helpers.simulate_ical(n_sweep, N_div, R, t0_range[i], pca, thold = thold, peak = True)
+    d3, _ = helpers.simulate_ical_curr(n_sweep, N_div, R, t0_range[i], pca, thold = thold)
     x_range = np.linspace(0, n_sweep -1, n_sweep)
     ax3.plot(x_range*mult, d3, color = colors[i], label = f'{int(t0_range[i]/1000)}s')
 

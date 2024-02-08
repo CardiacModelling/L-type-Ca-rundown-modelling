@@ -52,10 +52,10 @@ for i in range(16):
     if i % 2 == 0:
         pass
     else:
-        if i == 1 or i ==3 or i == 5 or i == 7:
-            fig_cont[i].set_ylim(6, 10)
-        else:
+        if i == 9 or i ==11:
             fig_cont[i].set_ylim(0, 10)
+        else:
+            fig_cont[i].set_ylim(9.7, 10)
 
 fig.text(0.17, 0.97, 'Minimum permeability ($\overline{P}_{Ca}$)', \
          fontsize = 9, family = 'arial')
