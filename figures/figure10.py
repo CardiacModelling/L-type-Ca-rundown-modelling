@@ -37,7 +37,7 @@ while count_t < n_draw_ax2:
         if min(t_const) == tdiff:
             a = t0/thold
             b = t0/tdiff
-            if a*b > 4.5:
+            if a*b > 1.5:
                 found_p = True
     
     count_t += 1
@@ -57,7 +57,7 @@ while count_t < n_draw_ax2:
         if min(t_const) == tdiff:
             a = t0/thold
             b = t0/tdiff
-            if a*b < 1.5:
+            if a*b < 0.5:
                 found_p = True
     
     count_t += 1
@@ -100,7 +100,7 @@ while count_t < n_draw_ax2:
         if min(t_const) == thold:
             a = t0/thold
             b = t0/tdiff
-            if a*b > 4.5:
+            if a*b > 1.5:
                 found_p = True
 
     count_t += 1
@@ -121,7 +121,7 @@ while count_t < n_draw_ax2:
         if min(t_const) == thold:
             a = t0/thold
             b = t0/tdiff
-            if a*b < 1.5:
+            if a*b < 0.5:
                 found_p = True
 
     count_t += 1
